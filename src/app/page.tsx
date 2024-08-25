@@ -1,5 +1,21 @@
-import Image from "next/image";
+"use client";
+import SmartContractForm from "@/components/SmartContractForm";
+import { useState } from "react";
 
 export default function Home() {
-  return <h1>Easy3</h1>;
+  const [contractDetails, setContractDetails] = useState({
+    name: "",
+    symbol: "",
+    totalSupply: 0,
+  });
+
+  return (
+    <>
+      <h1 className="text-3xl font-bold mb-6 text-center">Easy3</h1>
+      <SmartContractForm
+        contractDetails={contractDetails}
+        setContractDetails={setContractDetails}
+      />
+    </>
+  );
 }
