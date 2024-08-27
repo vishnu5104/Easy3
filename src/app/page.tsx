@@ -1,4 +1,5 @@
 "use client";
+import ContractGenerator from "@/components/ContractGenerator";
 import SmartContractForm from "@/components/SmartContractForm";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ export default function Home() {
         contractDetails={contractDetails}
         setContractDetails={setContractDetails}
       />
+      <ContractGenerator contractDetails={} onDeploy={} onNext={} onPrev={} />
     </>
   );
 }
