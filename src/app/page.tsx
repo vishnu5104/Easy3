@@ -1,5 +1,6 @@
 "use client";
 import ContractGenerator from "@/components/ContractGenerator";
+import NFTGenerator from "@/components/NFTGenerator";
 import SmartContractForm from "@/components/SmartContractForm";
 import { useState } from "react";
 
@@ -18,6 +19,7 @@ export default function Home() {
         setContractDetails={setContractDetails}
       />
       <ContractGenerator contractDetails={} onDeploy={} onNext={} onPrev={} />
+      <NFTGenerator nfts={} onPublish={} setNfts={} />
     </>
   );
 }
