@@ -34,7 +34,17 @@ const ContractGenerator = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const generateContractContent = () => {
-    return ``;
+    return `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.22;
+
+import {ONFT721} from "@layerzerolabs/onft-evm/contracts/onft721/ONFT721.sol";
+
+contract ${contractDetails.name} is ONFT721 {
+    constructor(
+        address _lzEndpoint,
+        address _delegate 
+    ) ONFT721("${contractDetails.name}","${contractDetails.symbol}" , _lzEndpoint, _delegate) {}
+}`;
   };
 
   const handleCreateFile = async () => {
@@ -46,7 +56,7 @@ const ContractGenerator = ({
         },
         body: JSON.stringify({
           contractName: contractDetails.name,
-          contractContent: generateContractContent(), // Adjust this if needed
+          contractContent: generateContractContent(),
         }),
       });
 
@@ -59,7 +69,7 @@ const ContractGenerator = ({
       setFileCreated(true);
       setErrorMessage(null);
 
-      onDeploy(data.address); // Assuming the API returns a contractAddress
+      onDeploy(data.address);
       onNext();
     } catch (error) {
       console.error("Error creating file:", error);

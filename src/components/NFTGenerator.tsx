@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/card";
 
 import { useRouter } from "next/navigation";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 const NFTGenerator = ({ nfts, setNfts, onPublish }) => {
   const router = useRouter();
