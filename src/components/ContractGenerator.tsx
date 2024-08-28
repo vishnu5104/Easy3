@@ -49,7 +49,7 @@ contract ${contractDetails.name} is ONFT721 {
 
   const handleCreateFile = async () => {
     try {
-      const response = await fetch("/api/create-contract", {
+      const response = await fetch("/api/deploy-contract", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
