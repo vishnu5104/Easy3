@@ -20,20 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  ChevronDown,
-  ChevronUp,
-  ChevronsUpDown,
-  Maximize2,
-  Minimize2,
-} from "lucide-react";
-
+import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 const Canvas = ({ children }) => {
   return (
     <div className="border-2 border-dashed border-gray-300 p-4 h-[600px] overflow-auto">
