@@ -1,5 +1,11 @@
-import { resolve, dirname } from "path";
-import { writeFileSync, unlinkSync, readFileSync, existsSync } from "fs";
+import { resolve } from "path";
+import {
+  writeFileSync,
+  unlinkSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+} from "fs";
 import { ethers } from "ethers";
 import "dotenv/config";
 const solc = require("solc");
@@ -15,43 +21,73 @@ export async function POST(req: Request) {
   }
 
   try {
-    const contractDir = "contracts";
+    const contractDir = "src/contracts";
     const filePath = resolve(process.cwd(), contractDir, `${contractName}.sol`);
 
-    const fs = require("fs");
-    if (!fs.existsSync(contractDir)) {
-      fs.mkdirSync(contractDir, { recursive: true });
+    console.log(`Creating contracts directory at: ${contractDir}`);
+    if (!existsSync(contractDir)) {
+      mkdirSync(contractDir, { recursive: true });
+      console.log("Contracts directory created.");
+    } else {
+      console.log("Contracts directory already exists.");
     }
 
+    console.log(`Writing contract to file: ${filePath}`);
     writeFileSync(filePath, contractContent);
+    console.log("Contract file written successfully.");
 
     const { abi, bytecode } = compileContractWithImports(
       filePath,
       contractName
     );
 
-    const outputData = { abi, bytecode, contractName };
-    writeFileSync("output.json", JSON.stringify(outputData, null, 2));
-
     const privateKey = process.env.PRIVATE_KEY;
-    const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
-    const wallet = new ethers.Wallet(privateKey, provider);
+    const sepoliaProvider = new ethers.JsonRpcProvider(
+      process.env.SEPOLIA_RPC_URL
+    );
+    const optimismProvider = new ethers.JsonRpcProvider(
+      process.env.OPTIMISM_RPC_URL
+    );
 
-    console.log("Deploying contract...");
-    const factory = new ethers.ContractFactory(abi, bytecode, wallet);
-    const endpoint = "0x6EDCE65403992e310A62460808c4b910D972f10f";
-    const delegate = "0xa929ba7c88a260A50B02cf243cfd075Af83c70f6";
-    const contractInstance = await factory.deploy(endpoint, delegate);
+    const holeskyProvider = new ethers.JsonRpcProvider(
+      process.env.Holesky_RPC_URL
+    );
 
-    await contractInstance.waitForDeployment();
-    const contractaddress = await contractInstance.getAddress();
-    console.log("Contract deployed to address:", contractaddress);
+    const wallet = new ethers.Wallet(privateKey);
 
-    unlinkSync(filePath);
+    // Deploy to Sepolia
+    // await deployContract(
+    //   "Sepolia",
+    //   sepoliaProvider,
+    //   wallet.connect(sepoliaProvider),
+    //   abi,
+    //   bytecode
+    // );
 
-    return new Response(JSON.stringify({ address: contractInstance.address }), {
-      status: 200,
-    });
+    // Deploy to Optimism
+    // await deployContract(
+    //   "Optimism",
+    //   optimismProvider,
+    //   wallet.connect(optimismProvider),
+    //   abi,
+    //   bytecode
+    // );
+
+    await deployContract(
+      "Holesky",
+      wallet.connect(holeskyProvider),
+      abi,
+      bytecode
+    );
+
+    // Clean up the file because Easy don't store the contract file
+    // unlinkSync(filePath);
+    // console.log(`Contract file ${filePath} deleted.`);
+
+    return new Response(
+      JSON.stringify({ message: "Contracts deployed to both networks." }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error in contract deployment:", error);
     return new Response(JSON.stringify({ error: error.message }), {
@@ -59,6 +95,36 @@ export async function POST(req: Request) {
     });
   }
 }
+
+const deployContract = async (
+  networkName: string,
+  wallet: ethers.Wallet,
+  abi: any,
+  bytecode: string
+) => {
+  console.log(`Deploying contract to ${networkName}...`);
+
+  const factory = new ethers.ContractFactory(abi, bytecode, wallet);
+
+  const endpoint = "0x6EDCE65403992e310A62460808c4b910D972f10f";
+  const delegate = "0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C";
+
+  const contractInstance = await factory.deploy(endpoint, delegate);
+
+  await contractInstance.waitForDeployment();
+
+  const address = await contractInstance.getAddress();
+  console.log(`Contract deployed to address on ${networkName}:`, address);
+
+  const output = {
+    abi,
+    address,
+    network: networkName,
+  };
+
+  writeFileSync(`output-${networkName}.json`, JSON.stringify(output, null, 2));
+  console.log(`Output written to output-${networkName}.json`);
+};
 
 const compileContractWithImports = (
   baseContractPath: string,
