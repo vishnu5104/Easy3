@@ -13,13 +13,7 @@ export default function Home() {
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-6 text-center">Easy3</h1>
-      <SmartContractForm
-        contractDetails={contractDetails}
-        setContractDetails={setContractDetails}
-      />
-      <ContractGenerator contractDetails={} onDeploy={} onNext={} onPrev={} />
-      <NFTGenerator nfts={} onPublish={} setNfts={} />
+      <div>Hii</div>
     </>
   );
 }
