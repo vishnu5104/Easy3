@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
-const NFTCard = ({ contractAddress }: { contractAddress: string }) => {
+const NFTCreation = ({ contractAddress }: { contractAddress: string }) => {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -100,4 +100,4 @@ const NFTCard = ({ contractAddress }: { contractAddress: string }) => {
   );
 };
 
-export default NFTCard;
+export default NFTCreation;
