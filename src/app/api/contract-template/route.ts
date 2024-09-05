@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getContractTemplate } from "../../../../utils/readContract";
+import { getContractTemplate } from "@/lib/readContract";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
