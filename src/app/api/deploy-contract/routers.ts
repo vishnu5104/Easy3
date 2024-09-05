@@ -21,6 +21,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Change the directory to be inside src folder
     const contractDir = "src/contracts";
     const filePath = resolve(process.cwd(), contractDir, `${contractName}.sol`);
 
@@ -42,40 +43,17 @@ export async function POST(req: Request) {
     );
 
     const privateKey = process.env.PRIVATE_KEY;
-    const sepoliaProvider = new ethers.JsonRpcProvider(
-      process.env.SEPOLIA_RPC_URL
-    );
-    const optimismProvider = new ethers.JsonRpcProvider(
-      process.env.OPTIMISM_RPC_URL
-    );
-
     const holeskyProvider = new ethers.JsonRpcProvider(
       process.env.Holesky_RPC_URL
     );
 
+    const hederaProvider = new ethers.JsonRpcProvider(process.env.Hedera_RPC_URL);
+
     const wallet = new ethers.Wallet(privateKey);
 
-    // Deploy to Sepolia
-    // await deployContract(
-    //   "Sepolia",
-    //   sepoliaProvider,
-    //   wallet.connect(sepoliaProvider),
-    //   abi,
-    //   bytecode
-    // );
-
-    // Deploy to Optimism
-    // await deployContract(
-    //   "Optimism",
-    //   optimismProvider,
-    //   wallet.connect(optimismProvider),
-    //   abi,
-    //   bytecode
-    // );
-
-    await deployContract(
-      "Holesky",
-      wallet.connect(holeskyProvider),
+    const contractAddress = await deployContract(
+      "Hedera Testnet",
+      wallet.connect(hederaProvider),
       abi,
       bytecode
     );
@@ -85,7 +63,10 @@ export async function POST(req: Request) {
     // console.log(`Contract file ${filePath} deleted.`);
 
     return new Response(
-      JSON.stringify({ message: "Contracts deployed to both networks." }),
+      JSON.stringify({
+        message: "Contract deployed successfully.",
+        contractAddress: contractAddress,
+      }),
       { status: 200 }
     );
   } catch (error) {
@@ -101,12 +82,12 @@ const deployContract = async (
   wallet: ethers.Wallet,
   abi: any,
   bytecode: string
-) => {
+): Promise<string> => {
   console.log(`Deploying contract to ${networkName}...`);
 
   const factory = new ethers.ContractFactory(abi, bytecode, wallet);
 
-  const endpoint = "0x6EDCE65403992e310A62460808c4b910D972f10f";
+  const endpoint = "0xbD672D1562Dd32C23B563C989d8140122483631d";
   const delegate = "0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C";
 
   const contractInstance = await factory.deploy(endpoint, delegate);
@@ -124,6 +105,8 @@ const deployContract = async (
 
   writeFileSync(`output-${networkName}.json`, JSON.stringify(output, null, 2));
   console.log(`Output written to output-${networkName}.json`);
+
+  return address;
 };
 
 const compileContractWithImports = (
