@@ -43,11 +43,10 @@ export async function POST(req: Request) {
     );
 
     const privateKey = process.env.PRIVATE_KEY;
-    const holeskyProvider = new ethers.JsonRpcProvider(
-      process.env.Holesky_RPC_URL
-    );
 
-    const hederaProvider = new ethers.JsonRpcProvider(process.env.Hedera_RPC_URL);
+    const hederaProvider = new ethers.JsonRpcProvider(
+      process.env.Hedera_RPC_URL
+    );
 
     const wallet = new ethers.Wallet(privateKey);
 
