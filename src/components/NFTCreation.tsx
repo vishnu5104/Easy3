@@ -44,7 +44,7 @@ import { useDropzone } from "react-dropzone";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { useRouter } from "next/navigation";
 import {
   Tooltip,
   TooltipContent,
@@ -66,6 +66,8 @@ export default function NFTCreation({
   tokenSymbol,
 }: NFTCreationProps) {
   const [url, setUrl] = useState("");
+
+  const route = useRouter();
 
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -90,6 +92,12 @@ export default function NFTCreation({
   const [fileType, setFileType] = useState<"image" | "audio" | "video" | "3d">(
     "image"
   );
+
+  const [name, setName] = useState("");
+  const [subdomain, setSubdomain] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
   const [unlockableContent, setUnlockableContent] = useState("");
   const [isLazyMinted, setIsLazyMinted] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
@@ -169,12 +177,14 @@ export default function NFTCreation({
       const formData = new FormData();
       formData.append("file", file);
 
+      const PINATA_JWT =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGNmZmVlMy03MDIyLTQzYWQtOGYwOC0yZGY1OTQ0NmEzYzEiLCJlbWFpbCI6InZpc2hudS5zMTUwNEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZGJkNzI0ZTZmZTI1ZGIwOTQ5OTIiLCJzY29wZWRLZXlTZWNyZXQiOiJlMjMwMjAwZjAzMDRmOTVhMWNlOTkzZTBhMjA2ZGEyMTVjOTk0Y2I2MDU4YWVhYzc4ZTE5MGMyNmI4NGNmMGFhIiwiZXhwIjoxNzU3MTc1NzgxfQ.oJrc0WW9IA_xuvVcI_5KON1hf8x_H_Z1upsFBD0nWdI";
       const imageResponse = await fetch(
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.PINATA_JWT}`,
+            Authorization: `Bearer ${PINATA_JWT}`,
           },
           body: formData,
         }
@@ -219,7 +229,7 @@ export default function NFTCreation({
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${process.env.PINATA_JWT}`,
+            Authorization: `Bearer ${PINATA_JWT}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
@@ -237,6 +247,38 @@ export default function NFTCreation({
       console.log("Metadata uploaded to IPFS:", metadataResult);
 
       setUploadSuccess(true);
+
+      setMessage("");
+      setError("");
+      setName(metadata.name);
+      setSubdomain(metadata.collectionName);
+
+      try {
+        console.log({ name, subdomain });
+        const response = await fetch("/api/create-tenant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, subdomain }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("the data", data);
+          setMessage(
+            `Tenant created successfully: ${data.name} (${data.subdomain})`
+          );
+          setName("");
+          setSubdomain("");
+        } else {
+          const errorData = await response.json();
+          setError(errorData.error || "Failed to create tenant");
+        }
+      } catch (error) {
+        console.log("the err", error);
+        setError("An error occurred while creating the tenant");
+      }
+
+      // route.push("/");
     } catch (error) {
       console.error("Error uploading NFT:", error);
       setErrorMessage("Failed to upload NFT. Please try again.");
