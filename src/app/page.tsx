@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowRight, Box, Zap, Globe, Wallet } from "lucide-react";
+import Link from "next/link";
 
 const Logo = () => (
   <svg
@@ -194,30 +195,30 @@ export default function Home() {
           </span>
         </a>
         <nav className="ml-auto flex items-center gap-4 sm:gap-6">
-          <a
+          <Link
+            href="/create-marketplace"
             className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
-            href="#showcase"
           >
-            Showcase
-          </a>
-          <a
-            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
+            Create Marketplace
+          </Link>
+          <Link
             href="#features"
+            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
           >
             Features
-          </a>
-          <a
-            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
+          </Link>
+          <Link
             href="#how-it-works"
+            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
           >
             How It Works
-          </a>
-          <a
-            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
+          </Link>
+          <Link
             href="#contact"
+            className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
           >
             Contact
-          </a>
+          </Link>
           <Button className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white transition-all duration-300 ease-in-out transform hover:scale-105">
             <Wallet className="h-4 w-4" />
             Connect Wallet
