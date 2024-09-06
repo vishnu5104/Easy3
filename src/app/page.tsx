@@ -227,6 +227,310 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <AwesomeE3Design />
+        <section id="showcase" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-300">
+              Explore Marketplace
+            </h2>
+            <Tabs
+              defaultValue="art"
+              className="w-full"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
+              <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/10 rounded-lg p-1">
+                <TabsTrigger
+                  value="art"
+                  className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-teal-400"
+                >
+                  Art
+                </TabsTrigger>
+                <TabsTrigger
+                  value="collectibles"
+                  className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-teal-400"
+                >
+                  Collectibles
+                </TabsTrigger>
+                <TabsTrigger
+                  value="gaming"
+                  className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-teal-400"
+                >
+                  Gaming
+                </TabsTrigger>
+              </TabsList>
+              <div
+                className={`transition-all duration-500 ${isAnimating ? "opacity-0 scale-95" : "opacity-100 scale-100"}`}
+              >
+                <TabsContent
+                  value="art"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <Card className="bg-gradient-to-br from-teal-500/20 to-blue-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Art NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              ArtBlock Gallery
+                            </h3>
+                            <p className="text-sm text-teal-200">
+                              Curated digital art marketplace
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Art NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              PixelPulse
+                            </h3>
+                            <p className="text-sm text-blue-200">
+                              Pixel art NFT ecosystem
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent
+                  value="collectibles"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <Card className="bg-gradient-to-br from-indigo-500/20 to-teal-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Collectibles NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              CryptoCollectibles
+                            </h3>
+                            <p className="text-sm text-indigo-200">
+                              Rare digital collectibles platform
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-teal-500/20 to-blue-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Collectibles NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              VintageVault
+                            </h3>
+                            <p className="text-sm text-teal-200">
+                              Classic collectibles reimagined as NFTs
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent
+                  value="gaming"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <Card className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Gaming NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              GamersGuild
+                            </h3>
+                            <p className="text-sm text-blue-200">
+                              In-game items and characters marketplace
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-indigo-500/20 to-teal-500/20 border-white/10 overflow-hidden">
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video overflow-hidden">
+                        <img
+                          alt="Gaming NFT Marketplace"
+                          className="object-cover w-full h-full transition-all duration-300 transform hover:scale-110"
+                          height="300"
+                          src="/placeholder.svg?height=300&width=400"
+                          width="400"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                          <div>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                              MetaverseMarket
+                            </h3>
+                            <p className="text-sm text-indigo-200">
+                              Virtual real estate and assets exchange
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </div>
+              <div className="mt-8 text-center">
+                <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white transition-all duration-300 ease-in-out transform hover:scale-105 rounded-full shadow-lg">
+                  See More
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </Tabs>
+          </div>
+        </section>
+        <section id="features" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-300">
+              Why Choose Easy 3?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-teal-500/20 to-blue-500/20 rounded-lg backdrop-blur-md border border-white/10 transition-all duration-300 hover:scale-105">
+                <Zap className="h-12 w-12 text-yellow-400 mb-4" />
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Easy3 Builder
+                </h3>
+                <p className="text-teal-100">
+                  Create your NFT marketplace without coding in just 3 easy
+                  steps.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-lg backdrop-blur-md border border-white/10 transition-all duration-300 hover:scale-105">
+                <Box className="h-12 w-12 text-pink-400 mb-4" />
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Customizable Templates
+                </h3>
+                <p className="text-teal-100">
+                  Choose from a variety of stunning templates and make them your
+                  own.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-indigo-500/20 to-teal-500/20 rounded-lg backdrop-blur-md border border-white/10 transition-all duration-300 hover:scale-105">
+                <Globe className="h-12 w-12 text-purple-400 mb-4" />
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Global Reach
+                </h3>
+                <p className="text-teal-100">
+                  Connect with NFT enthusiasts and collectors worldwide.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-blue-300">
+              How It Works: Easy3 Steps
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-lg backdrop-blur-md border border-white/10">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-teal-400 text-white flex items-center justify-center text-2xl font-bold mb-4">
+                  1
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Choose Your Template
+                </h3>
+                <p className="text-teal-100">
+                  Select from our range of professionally designed NFT
+                  marketplace templates.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-teal-500/20 to-blue-500/20 rounded-lg backdrop-blur-md border border-white/10">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-teal-400 to-blue-500 text-white flex items-center justify-center text-2xl font-bold mb-4">
+                  2
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Customize Your Marketplace
+                </h3>
+                <p className="text-teal-100">
+                  Add your branding, configure settings, and curate your NFT
+                  collections.
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center p-6 bg-gradient-to-br from-blue-500/20 to-teal-500/20 rounded-lg backdrop-blur-md border border-white/10">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-teal-400 text-white flex items-center justify-center text-2xl font-bold mb-4">
+                  3
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-white">
+                  Launch and Grow
+                </h3>
+                <p className="text-teal-100">
+                  Go live with your marketplace and start selling your NFTs to a
+                  global audience.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="contact" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-white">
+                  Ready to Launch Your NFT Marketplace?
+                </h2>
+                <p className="mx-auto max-w-[700px] text-teal-100 md:text-xl">
+                  Join thousands of creators who are building the future of
+                  digital ownership with Easy 3.
+                </p>
+              </div>
+              <div className="w-full max-w-sm space-y-2">
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white transition-all duration-300 ease-in-out transform hover:scale-105 text-lg py-6 rounded-full shadow-lg"
+                  type="submit"
+                >
+                  Start Building Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );

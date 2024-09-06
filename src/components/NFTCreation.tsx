@@ -23,6 +23,7 @@ import {
   X,
   ShoppingBag,
   Coins,
+  Link,
   ChevronRight,
   ChevronLeft,
   FileImage,
@@ -39,13 +40,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useDropzone } from "react-dropzone";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -252,8 +247,8 @@ export default function NFTCreation({
             </Badge>
           </div>
           <div className="flex items-center space-x-2">
-            <Coins className="h-5 w-5" />
-            <span className="font-semibold">Token:</span>
+            <Link className="h-5 w-5" />
+            <span className="font-semibold">Subdomain:</span>
             <Badge variant="secondary" className="text-sm">
               {tokenName} ({tokenSymbol})
             </Badge>
@@ -324,19 +319,6 @@ export default function NFTCreation({
                     className="text-lg font-semibold flex items-center"
                   >
                     NFT Price
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-4 w-4 ml-2 text-gray-500 cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>
-                            Set the initial price for your NFT in the native
-                            currency of the selected blockchain.
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
                   </Label>
                   <Input
                     id="nftPrice"
