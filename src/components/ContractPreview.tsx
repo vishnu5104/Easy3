@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface ContractDetails {
   name: string;
   symbol: string;
-  totalSupply: number;
 }
 const ContractPreview = ({
   contractDetails,

@@ -13,18 +13,17 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ethers } from "ethers";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 interface ContractDetails {
   name: string;
   symbol: string;
-  totalSupply: number;
 }
 const CreateMarketplace = () => {
   const [contractDetails, setContractDetails] = useState<ContractDetails>({
     name: "",
     symbol: "",
-    totalSupply: 0,
   });
   const [isDeploying, setIsDeploying] = useState(false);
   const [fileCreated, setFileCreated] = useState<boolean | null>(null);
@@ -37,17 +36,29 @@ const CreateMarketplace = () => {
     setErrorMessage(null);
 
     try {
+      if (typeof window.ethereum === "undefined") {
+        throw new Error("MetaMask is not installed");
+      }
+
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+
       const response = await fetch(
         `/api/contract-template?name=${contractDetails.name || "MyNFT"}&symbol=${contractDetails.symbol || "NFT"}`
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch contract template");
+        throw new Error(
+          `Failed to fetch contract template: ${response.statusText}`
+        );
       }
 
       const contractContent = await response.text();
 
-      const createFileResponse = await fetch("/api/create-contract", {
+      const createFileResponse = await fetch("/api/deploy-contract", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,18 +70,30 @@ const CreateMarketplace = () => {
       });
 
       if (!createFileResponse.ok) {
-        throw new Error("Failed to deploy the contract");
+        const errorData = await createFileResponse.json();
+        throw new Error(
+          `Failed to create contract file: ${errorData.error || createFileResponse.statusText}`
+        );
       }
 
-      const data = await createFileResponse.json();
-      setFileCreated(true);
-      setContractAddress(data.contractAddress);
+      const { abi, bytecode } = await createFileResponse.json();
 
-      console.log("Contract address updated:", data.contractAddress);
+      const factory = new ethers.ContractFactory(abi, bytecode, signer);
+      const endpoint = "0x6EDCE65403992e310A62460808c4b910D972f10f";
+      const delegate = "0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C";
+      const contractInstance = await factory.deploy(endpoint, delegate);
+      await contractInstance.waitForDeployment();
+
+      setFileCreated(true);
+      setContractAddress(address);
+
+      console.log("Contract deployed successfully. Address:", address);
     } catch (error) {
-      console.error("Error creating file:", error);
+      console.error("Error deploying contract:", error);
       setFileCreated(false);
-      setErrorMessage("Failed to create the file. Please try again.");
+      setErrorMessage(
+        error.message || "Failed to deploy the contract. Please try again."
+      );
     } finally {
       setIsDeploying(false);
     }
@@ -95,7 +118,7 @@ const CreateMarketplace = () => {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="contractName">NFT Contract Name</Label>
+                  <Label htmlFor="contractName">Contract Name</Label>
                   <Input
                     id="contractName"
                     value={contractDetails.name}
@@ -120,21 +143,6 @@ const CreateMarketplace = () => {
                       }))
                     }
                     placeholder="AWESOME"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="totalSupply">Total Supply</Label>
-                  <Input
-                    id="totalSupply"
-                    type="number"
-                    value={contractDetails.totalSupply}
-                    onChange={(e) =>
-                      setContractDetails((prev) => ({
-                        ...prev,
-                        totalSupply: parseInt(e.target.value, 10) || 0,
-                      }))
-                    }
-                    placeholder="10000"
                   />
                 </div>
               </div>
