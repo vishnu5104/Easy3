@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
     try {
       // Use fetch to verify if the subdomain exists
       const response = await fetch(
-        `${url.origin}/api/tenant?subdomain=${subdomain}`
+        `${url.origin}/api/marketplace?subdomain=${subdomain}`
       );
 
       if (response.ok) {
@@ -46,7 +46,7 @@ export async function middleware(req: NextRequest) {
         );
       }
     } catch (error) {
-      console.error("Middleware: Error fetching tenant:", error);
+      console.error("Middleware: Error fetching marketplace:", error);
     }
   }
 

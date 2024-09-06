@@ -1,4 +1,4 @@
-// app/api/create-tenant/route.ts
+// app/api/create-marketplace/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingTenant = await prisma.tenant.findUnique({
+    const existingTenant = await prisma.marketplace.findUnique({
       where: { subdomain },
     });
 
@@ -24,13 +24,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newTenant = await prisma.tenant.create({
+    const newTenant = await prisma.marketplace.create({
       data: { name, subdomain },
     });
 
     return NextResponse.json(newTenant, { status: 201 });
   } catch (error) {
-    console.error("Error creating tenant:", error);
+    console.error("Error creating marketplace:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

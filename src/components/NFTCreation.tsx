@@ -255,7 +255,7 @@ export default function NFTCreation({
 
       try {
         console.log({ name, subdomain });
-        const response = await fetch("/api/create-tenant", {
+        const response = await fetch("/api/create-marketplace", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, subdomain }),
@@ -271,11 +271,11 @@ export default function NFTCreation({
           setSubdomain("");
         } else {
           const errorData = await response.json();
-          setError(errorData.error || "Failed to create tenant");
+          setError(errorData.error || "Failed to create marketplace");
         }
       } catch (error) {
         console.log("the err", error);
-        setError("An error occurred while creating the tenant");
+        setError("An error occurred while creating the marketplace");
       }
 
       // route.push("/");

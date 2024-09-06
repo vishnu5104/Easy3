@@ -18,23 +18,25 @@ export default async function SubdomainPage({
   console.log("SubdomainPage: Rendering page for subdomain:", subdomain);
 
   try {
-    const tenant = await prisma.tenant.findUnique({
+    const marketplace = await prisma.marketplace.findUnique({
       where: { subdomain },
     });
-    console.log("SubdomainPage: Tenant retrieved:", tenant);
+    console.log("SubdomainPage: Tenant retrieved:", marketplace);
 
-    if (!tenant) {
+    if (!marketplace) {
       console.log("SubdomainPage: Tenant not found, redirecting to 404");
       notFound();
     }
 
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
-        <h1 className="text-4xl font-bold mb-8">Welcome to {tenant.name}</h1>
+        <h1 className="text-4xl font-bold mb-8">
+          Welcome to {marketplace.name}
+        </h1>
         <Link href={`/details`} className="w-full max-w-md">
           <Card className="w-full cursor-pointer hover:shadow-lg transition-shadow duration-300">
             <CardHeader>
-              <CardTitle>{tenant.name}</CardTitle>
+              <CardTitle>{marketplace.name}</CardTitle>
               <CardDescription>Subdomain: {subdomain}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -47,11 +49,11 @@ export default async function SubdomainPage({
       </div>
     );
   } catch (error) {
-    console.error("SubdomainPage: Error fetching tenant:", error);
+    console.error("SubdomainPage: Error fetching marketplace:", error);
     return (
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
         <h1 className="text-4xl font-bold text-red-500">Error</h1>
-        <p>There was an error loading the tenant information.</p>
+        <p>There was an error loading the marketplace information.</p>
       </div>
     );
   }

@@ -15,21 +15,21 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const tenant = await prisma.tenant.findUnique({
+    const marketplace = await prisma.marketplace.findUnique({
       where: { subdomain },
       select: { id: true, name: true, subdomain: true },
     });
 
-    console.log("API: Tenant found:", tenant);
+    console.log("API: Tenant found:", marketplace);
 
-    if (!tenant) {
+    if (!marketplace) {
       console.log("API: Tenant not found");
       return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
     }
 
-    return NextResponse.json(tenant);
+    return NextResponse.json(marketplace);
   } catch (error) {
-    console.error("API: Error fetching tenant:", error);
+    console.error("API: Error fetching marketplace:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
