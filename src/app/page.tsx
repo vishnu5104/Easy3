@@ -50,7 +50,6 @@ const Logo = () => (
     </defs>
   </svg>
 );
-
 function AwesomeE3Design() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const controls = useAnimation();
@@ -162,6 +161,7 @@ function AwesomeE3Design() {
 export default function Home() {
   const [activeTab, setActiveTab] = useState("art");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     setIsAnimating(true);
@@ -169,9 +169,24 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [activeTab]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-teal-500">
-      <header className="px-4 lg:px-6 h-16 flex items-center backdrop-blur-md bg-white/10 sticky top-0 z-50">
+      <header
+        className={`px-4 lg:px-6 h-16 flex items-center transition-all duration-300 sticky top-0 z-50 ${
+          isScrolled
+            ? "bg-gradient-to-r from-blue-900/90 to-indigo-900/90 backdrop-blur-md shadow-lg"
+            : "bg-transparent"
+        }`}
+      >
         <a className="flex items-center justify-center" href="#">
           <Logo />
           <span className="ml-2 text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-300 to-indigo-300">
