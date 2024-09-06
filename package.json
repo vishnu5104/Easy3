@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
     "@layerzerolabs/eslint-config-next": "~2.3.34",
     "@layerzerolabs/lz-definitions": "^2.3.34",
     "@layerzerolabs/lz-evm-messagelib-v2": "^2.3.34",
@@ -21,7 +22,6 @@
     "@layerzerolabs/solhint-config": "^2.3.34",
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
-    "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -55,6 +55,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.2.0",
     "ethers": "^6.13.2",
+    "framer-motion": "^11.5.4",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.438.0",
     "next": "14.2.6",
