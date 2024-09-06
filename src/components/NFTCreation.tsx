@@ -65,6 +65,8 @@ export default function NFTCreation({
   tokenName,
   tokenSymbol,
 }: NFTCreationProps) {
+  const [url, setUrl] = useState("");
+
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string>("");
   const [uploading, setUploading] = useState(false);
@@ -155,8 +157,8 @@ export default function NFTCreation({
   };
 
   const handleUpload = async () => {
-    if (!file && !fileUrl) {
-      setErrorMessage("Please select a file to upload or provide a valid URL.");
+    if (!file) {
+      setErrorMessage("Please select an image file to upload.");
       return;
     }
 
@@ -165,40 +167,74 @@ export default function NFTCreation({
 
     try {
       const formData = new FormData();
-      if (file) {
-        formData.append("file", file);
-      } else {
-        formData.append("fileUrl", fileUrl);
-      }
-      formData.append("contractAddress", contractAddress);
-      formData.append(
-        "metadata",
-        JSON.stringify({
-          ...nftMetadata,
-          royaltyPercentage,
-          collectionName,
-          blockchain,
-          price,
-          auctionEnabled,
-          auctionDuration,
-          backgroundColor,
-          isLimitedEdition,
-          editionSize,
-          fileType,
-          unlockableContent,
-          isLazyMinted,
-          tags,
-        })
+      formData.append("file", file);
+
+      const imageResponse = await fetch(
+        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.PINATA_JWT}`,
+          },
+          body: formData,
+        }
       );
 
-      const response = await fetch("/api/upload-nft", {
-        method: "POST",
-        body: formData,
-      });
+      const imageResult = await imageResponse.json();
 
-      if (!response.ok) {
-        throw new Error("Failed to upload NFT");
+      if (!imageResponse.ok) {
+        throw new Error("Failed to upload image to IPFS");
       }
+
+      const imageUrl = `https://dweb.link/ipfs/${imageResult.IpfsHash}`;
+      console.log("Image uploaded to IPFS:", imageUrl);
+
+      const metadata = {
+        ...nftMetadata,
+        image: imageUrl,
+        royaltyPercentage,
+        collectionName,
+        blockchain,
+        price,
+        auctionEnabled,
+        auctionDuration,
+        backgroundColor,
+        isLimitedEdition,
+        editionSize,
+        fileType,
+        unlockableContent,
+        isLazyMinted,
+        tags,
+      };
+
+      const requestBody = {
+        pinataMetadata: {
+          name: collectionName,
+        },
+        pinataContent: metadata,
+      };
+
+      const metadataResponse = await fetch(
+        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.PINATA_JWT}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      const metadataResult = await metadataResponse.json();
+
+      if (!metadataResponse.ok) {
+        throw new Error("Failed to upload NFT metadata");
+      }
+
+      // Handle success response
+      setUrl(metadataResult);
+      console.log("Metadata uploaded to IPFS:", metadataResult);
 
       setUploadSuccess(true);
     } catch (error) {
@@ -437,7 +473,7 @@ export default function NFTCreation({
                   <TabsContent value="link">
                     <Input
                       type="url"
-                      placeholder="https://example.com/my-nft-asset.jpg"
+                      placeholder="Paste your NFT URL"
                       value={fileUrl}
                       onChange={(e) => setFileUrl(e.target.value)}
                       className="mt-2"

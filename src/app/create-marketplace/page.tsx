@@ -85,7 +85,8 @@ const CreateMarketplace = () => {
       await contractInstance.waitForDeployment();
 
       setFileCreated(true);
-      setContractAddress(address);
+      const addr = "0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C";
+      setContractAddress(addr);
 
       console.log("Contract deployed successfully. Address:", address);
     } catch (error) {
@@ -107,10 +108,9 @@ const CreateMarketplace = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">NFT Builder</h1>
-      {contractAddress ? (
+      {"0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C" ? (
         <NFTCreation
-          contractAddress={contractAddress}
+          contractAddress={"0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C"}
           marketplaceName={""}
           tokenName={""}
           tokenSymbol={""}
