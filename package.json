@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/model-viewer": "^3.5.0",
     "@hookform/resolvers": "^3.9.0",
     "@layerzerolabs/eslint-config-next": "~2.3.34",
     "@layerzerolabs/lz-definitions": "^2.3.34",
@@ -64,6 +65,7 @@
     "react": "^18",
     "react-day-picker": "8.10.1",
     "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.53.0",
     "react-resizable-panels": "^2.1.1",
     "recharts": "^2.12.7",

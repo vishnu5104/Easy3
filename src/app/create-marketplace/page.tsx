@@ -79,7 +79,7 @@ const CreateMarketplace = () => {
       const { abi, bytecode } = await createFileResponse.json();
 
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
-      const endpoint = "0x6EDCE65403992e310A62460808c4b910D972f10f";
+      const endpoint = "0xbD672D1562Dd32C23B563C989d8140122483631d";
       const delegate = "0x0C467c60e97221de6cD9C93C3AF1861f7aE2995C";
       const contractInstance = await factory.deploy(endpoint, delegate);
       await contractInstance.waitForDeployment();
@@ -104,104 +104,111 @@ const CreateMarketplace = () => {
       console.log("Contract address is now set:", contractAddress);
     }
   }, [contractAddress]);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6 text-center">NFT Builder</h1>
-      {contractAddress ? (
-        <NFTCreation contractAddress={contractAddress} />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create Smart Contract</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="contractName">Contract Name</Label>
-                  <Input
-                    id="contractName"
-                    value={contractDetails.name}
-                    onChange={(e) =>
-                      setContractDetails((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="My Awesome NFT"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tokenSymbol">Token Symbol</Label>
-                  <Input
-                    id="tokenSymbol"
-                    value={contractDetails.symbol}
-                    onChange={(e) =>
-                      setContractDetails((prev) => ({
-                        ...prev,
-                        symbol: e.target.value,
-                      }))
-                    }
-                    placeholder="AWESOME"
-                  />
-                </div>
+
+      {/* Display NFTCreation component regardless of contract address */}
+      <NFTCreation
+        contractAddress={contractAddress || ""}
+        marketplaceName={""}
+        tokenName={contractDetails.name || ""}
+        tokenSymbol={contractDetails.symbol || ""}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create Smart Contract</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="contractName">Contract Name</Label>
+                <Input
+                  id="contractName"
+                  value={contractDetails.name}
+                  onChange={(e) =>
+                    setContractDetails((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  placeholder="My Awesome NFT"
+                />
               </div>
-            </CardContent>
-            <CardFooter className="flex flex-col items-start space-y-4">
-              <Button onClick={handleCreateFile} disabled={isDeploying}>
-                {isDeploying ? (
-                  <span className="flex items-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Deploying...
-                  </span>
-                ) : (
-                  "Create Contract File"
-                )}
-              </Button>
-              {fileCreated === true && (
-                <Alert variant="default">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <AlertTitle>Success</AlertTitle>
-                  <AlertDescription>
-                    Contract {contractDetails.name} has been deployed
-                    successfully.
-                  </AlertDescription>
-                </Alert>
+              <div>
+                <Label htmlFor="tokenSymbol">Token Symbol</Label>
+                <Input
+                  id="tokenSymbol"
+                  value={contractDetails.symbol}
+                  onChange={(e) =>
+                    setContractDetails((prev) => ({
+                      ...prev,
+                      symbol: e.target.value,
+                    }))
+                  }
+                  placeholder="AWESOME"
+                />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col items-start space-y-4">
+            <Button onClick={handleCreateFile} disabled={isDeploying}>
+              {isDeploying ? (
+                <span className="flex items-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Deploying...
+                </span>
+              ) : (
+                "Create Contract File"
               )}
-              {fileCreated === false && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>
-                    {errorMessage ||
-                      "There was an error creating the file. Please try again."}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardFooter>
-          </Card>
-          <ContractPreview contractDetails={contractDetails} />
-        </div>
-      )}
+            </Button>
+            {fileCreated === true && (
+              <Alert variant="default">
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertTitle>Success</AlertTitle>
+                <AlertDescription>
+                  Contract {contractDetails.name} has been deployed
+                  successfully.
+                </AlertDescription>
+              </Alert>
+            )}
+            {fileCreated === false && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>
+                  {errorMessage ||
+                    "There was an error creating the file. Please try again."}
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardFooter>
+        </Card>
+
+        <ContractPreview contractDetails={contractDetails} />
+      </div>
     </div>
   );
 };
