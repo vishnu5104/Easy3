@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ethsign/sp-sdk": "^0.7.3",
+    "@hashgraph/sdk": "^2.50.0",
     "@hookform/resolvers": "^3.9.0",
     "@layerzerolabs/eslint-config-next": "~2.3.34",
     "@layerzerolabs/lz-definitions": "^2.3.34",
