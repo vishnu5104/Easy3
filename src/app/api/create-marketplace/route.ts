@@ -13,22 +13,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingTenant = await prisma.marketplace.findUnique({
+    const existingmarketplace = await prisma.marketplace.findUnique({
       where: { subdomain },
     });
 
-    if (existingTenant) {
+    if (existingmarketplace) {
       return NextResponse.json(
         { error: "Subdomain already exists" },
         { status: 409 }
       );
     }
 
-    const newTenant = await prisma.marketplace.create({
+    const newmarketplace = await prisma.marketplace.create({
       data: { name, subdomain },
     });
 
-    return NextResponse.json(newTenant, { status: 201 });
+    return NextResponse.json(newmarketplace, { status: 201 });
   } catch (error) {
     console.error("Error creating marketplace:", error);
     return NextResponse.json(

@@ -20,11 +20,14 @@ export async function GET(request: NextRequest) {
       select: { id: true, name: true, subdomain: true },
     });
 
-    console.log("API: Tenant found:", marketplace);
+    console.log("API: marketplace found:", marketplace);
 
     if (!marketplace) {
-      console.log("API: Tenant not found");
-      return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
+      console.log("API: marketplace not found");
+      return NextResponse.json(
+        { error: "marketplace not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(marketplace);

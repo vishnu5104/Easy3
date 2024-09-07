@@ -265,7 +265,7 @@ export default function NFTCreation({
           const data = await response.json();
           console.log("the data", data);
           setMessage(
-            `Tenant created successfully: ${data.name} (${data.subdomain})`
+            `marketplace created successfully: ${data.name} (${data.subdomain})`
           );
           setName("");
           setSubdomain("");
