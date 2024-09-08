@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    //@ts-ignore
     const tenant = await prisma.tenant.findUnique({
       where: { subdomain },
       select: { id: true, name: true, subdomain: true },
