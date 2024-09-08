@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    //@ts-ignore
     const marketplace = await prisma.marketplace.findUnique({
       where: { subdomain },
       select: { id: true, name: true, subdomain: true },
