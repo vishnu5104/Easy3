@@ -82,7 +82,7 @@ export default function EnhancedMarketplacePage({
                   {subdomain.toUpperCase()} Marketplace
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Dive into the world's most innovative NFT marketplace. Unearth
+                  Dive into the worlds most innovative NFT marketplace. Unearth
                   rare digital treasures and unleash your creativity.
                 </p>
               </div>
