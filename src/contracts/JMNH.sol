@@ -7,5 +7,5 @@ contract JMNH is ONFT721 {
     constructor(
         address _lzEndpoint,
         address _delegate
-    ) ONFT721("JMNH", "HNB", _lzEndpoint, _delegate) {}
+    ) ONFT721("JMNH", "HJN", _lzEndpoint, _delegate) {}
 }
