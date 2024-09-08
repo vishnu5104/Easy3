@@ -13,6 +13,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { SignProtocolClient, SpMode, OffChainSignType } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertCircle,
@@ -102,6 +105,12 @@ export default function NFTCreation({
   const [isLazyMinted, setIsLazyMinted] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
 
+  //attr
+  const [schemaInfo, setSchemaInfo] = useState(null);
+  const [attestationInfo, setAttestationInfo] = useState(null);
+  const [fetchedSchema, setFetchedSchema] = useState(null);
+  const [fetchedAttestation, setFetchedAttestation] = useState(null);
+
   const steps = ["Create NFT", "ONFT721 Configuration", "NFT Preview"];
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -154,14 +163,6 @@ export default function NFTCreation({
       ...prev,
       attributes: prev.attributes.filter((_, i) => i !== index),
     }));
-  };
-
-  const calculateRarityScore = () => {
-    const totalAttributes = nftMetadata.attributes.length;
-    const uniqueAttributes = new Set(
-      nftMetadata.attributes.map((attr) => attr.trait_type)
-    ).size;
-    return ((uniqueAttributes / totalAttributes) * 100).toFixed(2);
   };
 
   const handleUpload = async () => {
@@ -217,34 +218,54 @@ export default function NFTCreation({
         tags,
       };
 
-      const requestBody = {
-        pinataMetadata: {
-          name: collectionName,
+      const privateKey =
+        "0x705bdfea3af325337deb96821f6c82a207c28c16e15f8778f4365a4b95f1266c";
+      const client = new SignProtocolClient(SpMode.OffChain, {
+        signType: OffChainSignType.EvmEip712,
+        account: privateKeyToAccount(privateKey),
+      });
+
+      console.log("Creating schema...");
+      const createdSchemaInfo = await client.createSchema({
+        name: "NFT Schema",
+        data: [
+          { name: "nft_name", type: "string" },
+          { name: "nft_price", type: "uint256" },
+          { name: "image_url", type: "string" },
+          { name: "wallet_address", type: "string" },
+        ],
+      });
+      console.log("Schema created:", createdSchemaInfo);
+      setSchemaInfo(createdSchemaInfo);
+
+      const schemaIdToUse = createdSchemaInfo.schemaId;
+      console.log("Fetching schema...");
+      const fetchedSchema = await client.getSchema(schemaIdToUse);
+
+      console.log("Schema fetched:", fetchedSchema);
+      setFetchedSchema(fetchedSchema);
+
+      console.log("Creating attestation...");
+      const createdAttestationInfo = await client.createAttestation({
+        schemaId: schemaIdToUse,
+        data: {
+          nft_name: metadata.name,
+          nft_price: parseFloat(metadata.price) * 1e18, // Convert to wei
+          image_url: imageUrl,
+          wallet_address: "0x1B634d89D6C64E249523A5a199eB52AaDE8297F7", // Replace with actual user's wallet address
         },
-        pinataContent: metadata,
-      };
+        indexingValue: metadata.name, // Use NFT name as unique indexing value
+      });
 
-      const metadataResponse = await fetch(
-        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${PINATA_JWT}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
+      console.log("Attestation created:", createdAttestationInfo);
+      setAttestationInfo(createdAttestationInfo);
+
+      console.log("Fetching attestation...");
+      const fetchedAttestation = await client.getAttestation(
+        createdAttestationInfo.attestationId
       );
-
-      const metadataResult = await metadataResponse.json();
-
-      if (!metadataResponse.ok) {
-        throw new Error("Failed to upload NFT metadata");
-      }
-
-      // Handle success response
-      setUrl(metadataResult);
-      console.log("Metadata uploaded to IPFS:", metadataResult);
+      console.log("Attestation fetched:", fetchedAttestation);
+      setFetchedAttestation(fetchedAttestation);
 
       setUploadSuccess(true);
 
@@ -254,37 +275,46 @@ export default function NFTCreation({
       setSubdomain(metadata.collectionName);
 
       try {
-        console.log({ name, subdomain });
+        console.log({
+          name: metadata.name,
+          subdomain: metadata.collectionName,
+        });
         const response = await fetch("/api/create-marketplace", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, subdomain }),
+          body: JSON.stringify({
+            name: metadata.name,
+            subdomain: metadata.collectionName,
+          }),
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("the data", data);
+          console.log("Marketplace data:", data);
           setMessage(
-            `marketplace created successfully: ${data.name} (${data.subdomain})`
+            `Marketplace created successfully: ${data.name} (${data.subdomain})`
           );
-          setName("");
-          setSubdomain("");
         } else {
           const errorData = await response.json();
           setError(errorData.error || "Failed to create marketplace");
         }
       } catch (error) {
-        console.log("the err", error);
+        console.error("Error creating marketplace:", error);
         setError("An error occurred while creating the marketplace");
       }
-
-      // route.push("/");
     } catch (error) {
       console.error("Error uploading NFT:", error);
       setErrorMessage("Failed to upload NFT. Please try again.");
     } finally {
       setUploading(false);
     }
+  };
+  const calculateRarityScore = () => {
+    const totalAttributes = nftMetadata.attributes.length;
+    const uniqueAttributes = new Set(
+      nftMetadata.attributes.map((attr) => attr.trait_type)
+    ).size;
+    return ((uniqueAttributes / totalAttributes) * 100).toFixed(2);
   };
 
   const nextStep = () => {

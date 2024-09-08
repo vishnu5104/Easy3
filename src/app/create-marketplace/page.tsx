@@ -152,23 +152,6 @@ export default function CreateMarketplace() {
                     placeholder="AWESOME"
                   />
                 </div>
-                <div>
-                  <Label>Contract Type</Label>
-                  <Tabs
-                    defaultValue="ERC721"
-                    onValueChange={(value) =>
-                      setContractDetails((prev) => ({
-                        ...prev,
-                        type: value as "ERC721" | "HSCS",
-                      }))
-                    }
-                  >
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="ERC721">ERC721 Token</TabsTrigger>
-                      <TabsTrigger value="HSCS">HSCS Token</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-start space-y-4">
