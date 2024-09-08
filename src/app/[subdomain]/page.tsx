@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,10 @@ import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Search, ChevronDown, Heart, Zap, Trophy, Star } from "lucide-react";
+import { SignProtocolClient, SpMode, OffChainSignType } from "@ethsign/sp-sdk";
+import { privateKeyToAccount } from "viem/accounts";
+
+import ids from "../../../schema.json";
 
 export default function EnhancedMarketplacePage({
   params,
@@ -28,41 +32,46 @@ export default function EnhancedMarketplacePage({
   params: { subdomain: string };
 }) {
   const { subdomain } = params;
-  console.log("SubdomainPage: Rendering page for subdomain:", subdomain);
+  const [nftData, setNftData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const privateKey =
+        "0x705bdfea3af325337deb96821f6c82a207c28c16e15f8778f4365a4b95f1266c";
+      const client = new SignProtocolClient(SpMode.OffChain, {
+        signType: OffChainSignType.EvmEip712,
+        account: privateKeyToAccount(privateKey),
+      });
+
+      try {
+        setLoading(true);
+        setError(null);
+        const fetchPromises = ids.map((id) =>
+          client.getAttestation(id.schemaId)
+        );
+        const results = await Promise.all(fetchPromises);
+        const nfts = results.map((result) => result.data).filter(Boolean);
+        console.log("Fetched data:", nfts);
+        setNftData(nfts);
+      } catch (error) {
+        console.error("Error fetching attestations:", error);
+        setError("Failed to fetch NFT data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    console.log("Current nftData:", nftData);
+  }, [nftData]);
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
-      <header className="px-4 lg:px-6 h-14 flex items-center border-b bg-white/50 backdrop-blur-xl dark:bg-gray-800/50">
-        <Link className="flex items-center justify-center" href="#">
-          <DiamondIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-          <span className="ml-2 text-lg font-bold">Easy3</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400"
-            href="#"
-          >
-            Explore
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400"
-            href="#"
-          >
-            Collections
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400"
-            href="#"
-          >
-            Create
-          </Link>
-          <Link
-            className="text-sm font-medium hover:text-purple-600 dark:hover:text-purple-400"
-            href="#"
-          >
-            Community
-          </Link>
-        </nav>
-      </header>
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-[url('/hero-bg.svg')] bg-cover bg-center">
           <div className="container px-4 md:px-6">
@@ -72,7 +81,6 @@ export default function EnhancedMarketplacePage({
                   Discover, Collect, and Create Extraordinary NFTs on{" "}
                   {subdomain.toUpperCase()} Marketplace
                 </h1>
-
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                   Dive into the world's most innovative NFT marketplace. Unearth
                   rare digital treasures and unleash your creativity.
@@ -93,43 +101,93 @@ export default function EnhancedMarketplacePage({
               Live Auctions
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <Card
-                  key={i}
-                  className="overflow-hidden bg-white dark:bg-gray-800 border-2 border-purple-200 dark:border-purple-800"
-                >
-                  <CardHeader className="p-0">
-                    <img
-                      alt={`Auction NFT ${i}`}
-                      className="w-full h-48 object-cover"
-                      height="200"
-                      src={`/auction-nft-${i}.jpg`}
-                      width="300"
-                    />
-                  </CardHeader>
+              {loading ? (
+                Array.from({ length: 3 }).map((_, index) => (
+                  <Card
+                    key={index}
+                    className="overflow-hidden bg-white dark:bg-gray-800 border-2 border-purple-200 dark:border-purple-800"
+                  >
+                    <CardContent className="p-4">
+                      <div className="animate-pulse flex space-x-4">
+                        <div className="rounded-full bg-slate-200 h-10 w-10"></div>
+                        <div className="flex-1 space-y-6 py-1">
+                          <div className="h-2 bg-slate-200 rounded"></div>
+                          <div className="space-y-3">
+                            <div className="grid grid-cols-3 gap-4">
+                              <div className="h-2 bg-slate-200 rounded col-span-2"></div>
+                              <div className="h-2 bg-slate-200 rounded col-span-1"></div>
+                            </div>
+                            <div className="h-2 bg-slate-200 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : error ? (
+                <Card className="overflow-hidden bg-white dark:bg-gray-800 border-2 border-red-200 dark:border-red-800">
                   <CardContent className="p-4">
-                    <CardTitle>Cosmic Dreams #{i}</CardTitle>
-                    <CardDescription>By Digital Alchemist</CardDescription>
-                    <div className="mt-4 flex justify-between items-center">
-                      <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Current Bid
-                        </p>
-                        <p className="font-bold text-lg">3.5 ETH</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          Ends in
-                        </p>
-                        <p className="font-bold text-lg">2h 51m</p>
-                      </div>
-                    </div>
-                    <Button className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                      Place Bid
+                    <CardTitle className="text-red-600">Error</CardTitle>
+                    <CardDescription>{error}</CardDescription>
+                    <Button
+                      onClick={() => window.location.reload()}
+                      className="mt-4"
+                    >
+                      Retry
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+              ) : nftData.length > 0 ? (
+                nftData.map((nft, index) => (
+                  <Link
+                    key={index}
+                    href={`/${subdomain}/nft/${nft.id || index}`}
+                    passHref
+                  >
+                    <Card className="overflow-hidden bg-white dark:bg-gray-800 border-2 border-purple-200 dark:border-purple-800 cursor-pointer transition-all hover:shadow-lg">
+                      <CardHeader className="p-0">
+                        <img
+                          alt={nft.nft_name || "NFT"}
+                          className="w-full h-64 object-cover"
+                          height="256"
+                          src={nft.image_url || "/placeholder.svg"}
+                          width="100%"
+                        />
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <CardTitle>{nft.nft_name || "Unnamed NFT"}</CardTitle>
+                        <CardDescription>
+                          {nft.description || "No description available"}
+                        </CardDescription>
+                        <div className="mt-4 flex justify-between items-center">
+                          <div>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Price
+                            </p>
+                            <p className="font-bold text-lg">
+                              {nft.nft_price
+                                ? `${nft.nft_price / 1e18} ETH`
+                                : "Price not available"}
+                            </p>
+                          </div>
+                          <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                            Buy Now
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              ) : (
+                <Card className="overflow-hidden bg-white dark:bg-gray-800 border-2 border-yellow-200 dark:border-yellow-800">
+                  <CardContent className="p-4">
+                    <CardTitle className="text-yellow-600">No Data</CardTitle>
+                    <CardDescription>
+                      No NFT data is currently available.
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </section>
@@ -283,7 +341,6 @@ export default function EnhancedMarketplacePage({
             </div>
           </div>
         </section>
-
         <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">

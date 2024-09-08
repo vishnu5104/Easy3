@@ -239,6 +239,7 @@ export default function NFTCreation({
       setSchemaInfo(createdSchemaInfo);
 
       const schemaIdToUse = createdSchemaInfo.schemaId;
+
       console.log("Fetching schema...");
       const fetchedSchema = await client.getSchema(schemaIdToUse);
 
@@ -250,11 +251,11 @@ export default function NFTCreation({
         schemaId: schemaIdToUse,
         data: {
           nft_name: metadata.name,
-          nft_price: parseFloat(metadata.price) * 1e18, // Convert to wei
+          nft_price: parseFloat(metadata.price) * 1e18,
           image_url: imageUrl,
-          wallet_address: "0x1B634d89D6C64E249523A5a199eB52AaDE8297F7", // Replace with actual user's wallet address
+          wallet_address: "0x1B634d89D6C64E249523A5a199eB52AaDE8297F7",
         },
-        indexingValue: metadata.name, // Use NFT name as unique indexing value
+        indexingValue: metadata.name,
       });
 
       console.log("Attestation created:", createdAttestationInfo);
@@ -264,6 +265,15 @@ export default function NFTCreation({
       const fetchedAttestation = await client.getAttestation(
         createdAttestationInfo.attestationId
       );
+
+      await fetch("/api/save-schema", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          schemaId: createdAttestationInfo.attestationId,
+        }),
+      });
+
       console.log("Attestation fetched:", fetchedAttestation);
       setFetchedAttestation(fetchedAttestation);
 
@@ -294,6 +304,7 @@ export default function NFTCreation({
           setMessage(
             `Marketplace created successfully: ${data.name} (${data.subdomain})`
           );
+          route.push(`http://${data.subdomain}.localhost:3000`);
         } else {
           const errorData = await response.json();
           setError(errorData.error || "Failed to create marketplace");
@@ -822,7 +833,7 @@ export default function NFTCreation({
                     <div className="mt-4">
                       <h5 className="font-semibold">Marketplace Details:</h5>
                       <p>Collection: {collectionName}</p>
-                      <p>Blockchain: {blockchain}</p>
+                      <p>Blockchain: Hedera</p>
                       <p>Royalty: {royaltyPercentage}%</p>
                       {auctionEnabled && (
                         <p>Auction Duration: {auctionDuration} days</p>
