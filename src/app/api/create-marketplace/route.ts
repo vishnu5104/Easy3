@@ -1,3 +1,4 @@
+//@ts-ignore
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../lib/prisma";
 
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+    //@ts-ignore
     const existingTenant = await prisma.marketplace.findUnique({
       where: { subdomain },
     });
