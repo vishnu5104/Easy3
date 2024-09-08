@@ -72,10 +72,10 @@ const Header = () => {
           Create Marketplace
         </Link>
         <Link
-          href="#features"
+          href="/hcs"
           className="text-sm font-medium text-white hover:text-teal-300 transition-colors"
         >
-          Features
+          HCS
         </Link>
         <Link
           href="#how-it-works"

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+    //@ts-ignore
     const existingTenant = await prisma.tenant.findUnique({
       where: { subdomain },
     });
