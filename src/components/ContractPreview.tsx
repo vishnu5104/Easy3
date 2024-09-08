@@ -104,6 +104,7 @@ main();`);
 
   const handleRemoveCustomField = (field: string) => {
     setCustomFields((prev) => prev.filter((f) => f !== field));
+  //@ts-ignore
     setTokenParams((prev) => {
       const { [field]: _, ...rest } = prev;
       return rest;
