@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,6 +11,7 @@ import { Loader2, Send, Plus, ExternalLink } from "lucide-react";
 type CommandResult = {
   command: string;
   result: string;
+  transactionId?: string;
 };
 
 const commands = [
@@ -25,10 +25,6 @@ export default function HedraCSCommandSuggester() {
   const [topicId, setTopicId] = useState<string | null>(null);
   const [createTopicLoading, setCreateTopicLoading] = useState(false);
   const [submitMessageLoading, setSubmitMessageLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageStatus, setMessageStatus] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [history, setHistory] = useState<CommandResult[]>([]);
@@ -75,7 +71,6 @@ export default function HedraCSCommandSuggester() {
         });
       } else {
         console.error("Error creating topic:", data.error);
-        setMessageStatus(`Error creating topic: ${data.error}`);
         toast({
           title: "Error",
           description: `Failed to create topic: ${data.error}`,
@@ -84,7 +79,6 @@ export default function HedraCSCommandSuggester() {
       }
     } catch (error) {
       console.error("Error in request:", error);
-      setMessageStatus("Error in request. Please try again.");
       toast({
         title: "Error",
         description: "Failed to create topic. Please try again.",
@@ -94,7 +88,7 @@ export default function HedraCSCommandSuggester() {
     setCreateTopicLoading(false);
   };
 
-  const submitMessage = async () => {
+  const submitMessage = async (message: string) => {
     if (!topicId || !message) return;
 
     setSubmitMessageLoading(true);
@@ -110,16 +104,13 @@ export default function HedraCSCommandSuggester() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessageStatus(`Message submission status: ${data.status}`);
-        setTransactionId(data.transactionId);
-        setMessage("");
         toast({
           title: "Message Submitted",
           description: `Transaction ID: ${data.transactionId}`,
         });
+        return data.transactionId;
       } else {
         console.error("Error submitting message:", data.error);
-        setMessageStatus(`Error submitting message: ${data.error}`);
         toast({
           title: "Error",
           description: `Failed to submit message: ${data.error}`,
@@ -128,17 +119,17 @@ export default function HedraCSCommandSuggester() {
       }
     } catch (error) {
       console.error("Error in request:", error);
-      setMessageStatus("Error in request. Please try again.");
       toast({
         title: "Error",
         description: "Failed to submit message. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setSubmitMessageLoading(false);
     }
-    setSubmitMessageLoading(false);
   };
 
-  const handleCommand = (e: React.FormEvent) => {
+  const handleCommand = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedInput = input.trim();
     let result = "Command executed successfully.";
@@ -179,13 +170,12 @@ export default function HedraCSCommandSuggester() {
         }
         break;
       default:
-        result =
-          "Invalid command. Try /sendAsset, /sendToken, /sendNFT, or /sendReward.";
+        result = `Sending message: ${trimmedInput}`;
     }
 
-    setHistory([...history, { command: trimmedInput, result }]);
+    const transactionId = await submitMessage(trimmedInput);
+    setHistory([...history, { command: trimmedInput, result, transactionId }]);
     setInput("");
-    setMessage(trimmedInput);
     toast({
       title: "Command Executed",
       description: result,
@@ -270,15 +260,32 @@ export default function HedraCSCommandSuggester() {
                 <Input id="topicId" value={topicId} readOnly />
               </div>
               <ScrollArea
-                className="h-[200px] mb-4 p-4 border rounded-md"
+                className="h-[300px] mb-4 p-4 border rounded-md"
                 ref={scrollAreaRef}
               >
                 {history.map((item, index) => (
-                  <div key={index} className="mb-2">
+                  <div key={index} className="mb-4">
                     <p className="text-primary font-mono">{`> ${item.command}`}</p>
                     <p className="text-muted-foreground font-mono">
                       {item.result}
                     </p>
+                    {item.transactionId && (
+                      <div className="mt-2 p-2 bg-gray-100 rounded-md">
+                        <p className="text-sm font-semibold">Transaction ID:</p>
+                        <p className="text-xs break-all">
+                          {item.transactionId}
+                        </p>
+                        <a
+                          href={`https://explorer.arkhia.io/testnet/transaction/${item.transactionId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline flex items-center text-xs mt-1"
+                        >
+                          View Transaction
+                          <ExternalLink className="inline-block ml-1 h-3 w-3" />
+                        </a>
+                      </div>
+                    )}
                   </div>
                 ))}
               </ScrollArea>
@@ -288,7 +295,7 @@ export default function HedraCSCommandSuggester() {
                   value={input}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Enter command (e.g., /sendToken)"
+                  placeholder="Enter command or message"
                   className="pr-20 font-mono"
                 />
                 <Button
@@ -323,26 +330,6 @@ export default function HedraCSCommandSuggester() {
                   </ul>
                 )}
               </form>
-              {messageStatus && (
-                <p className="text-sm text-green-600 mt-2">{messageStatus}</p>
-              )}
-              {transactionId && (
-                <div className="mt-4 p-4 bg-gray-100 rounded-md">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Transaction ID:
-                  </h3>
-                  <p className="text-sm break-all mb-2">{transactionId}</p>
-                  <a
-                    href={`https://explorer.arkhia.io/testnet/transaction/${transactionId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline flex items-center"
-                  >
-                    View Transaction
-                    <ExternalLink className="inline-block ml-1 h-4 w-4" />
-                  </a>
-                </div>
-              )}
             </CardContent>
           </Card>
         )}

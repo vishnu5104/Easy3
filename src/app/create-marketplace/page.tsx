@@ -40,12 +40,13 @@ export default function CreateMarketplace() {
     setErrorMessage(null);
 
     try {
+      //@ts-ignore
       if (typeof window.ethereum === "undefined") {
         throw new Error("MetaMask is not installed");
       }
-
+      //@ts-ignore
       await window.ethereum.request({ method: "eth_requestAccounts" });
-
+      //@ts-ignore
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
