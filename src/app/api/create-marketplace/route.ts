@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-
+    //@ts-ignore
     const newTenant = await prisma.tenant.create({
       data: { name, subdomain },
     });
