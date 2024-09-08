@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { ethers } from "ethers";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import ContractPreview from "@/components/ContractPreview";
 import NFTCreation from "@/components/NFTCreation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -13,17 +16,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ethers } from "ethers";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 interface ContractDetails {
   name: string;
   symbol: string;
+  type: "ERC721" | "HSCS";
 }
-const CreateMarketplace = () => {
+
+export default function CreateMarketplace() {
   const [contractDetails, setContractDetails] = useState<ContractDetails>({
     name: "",
     symbol: "",
+    type: "ERC721",
   });
   const [isDeploying, setIsDeploying] = useState(false);
   const [fileCreated, setFileCreated] = useState<boolean | null>(null);
@@ -47,7 +52,9 @@ const CreateMarketplace = () => {
       const address = await signer.getAddress();
 
       const response = await fetch(
-        `/api/contract-template?name=${contractDetails.name || "MyNFT"}&symbol=${contractDetails.symbol || "NFT"}`
+        `/api/contract-template?name=${contractDetails.name || "MyNFT"}&symbol=${
+          contractDetails.symbol || "NFT"
+        }&type=${contractDetails.type}`
       );
 
       if (!response.ok) {
@@ -66,6 +73,7 @@ const CreateMarketplace = () => {
         body: JSON.stringify({
           contractName: contractDetails.name,
           contractContent,
+          contractType: contractDetails.type,
         }),
       });
 
@@ -99,20 +107,14 @@ const CreateMarketplace = () => {
     }
   };
 
-  useEffect(() => {
-    if (contractAddress) {
-      console.log("Contract address is now set:", contractAddress);
-    }
-  }, [contractAddress]);
-
   return (
     <div className="container mx-auto p-4">
       {contractAddress ? (
         <NFTCreation
           contractAddress={contractAddress}
-          marketplaceName={""}
-          tokenName={""}
-          tokenSymbol={""}
+          marketplaceName={contractDetails.name}
+          tokenName={contractDetails.name}
+          tokenSymbol={contractDetails.symbol}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -149,6 +151,23 @@ const CreateMarketplace = () => {
                     }
                     placeholder="AWESOME"
                   />
+                </div>
+                <div>
+                  <Label>Contract Type</Label>
+                  <Tabs
+                    defaultValue="ERC721"
+                    onValueChange={(value) =>
+                      setContractDetails((prev) => ({
+                        ...prev,
+                        type: value as "ERC721" | "HSCS",
+                      }))
+                    }
+                  >
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="ERC721">ERC721 Token</TabsTrigger>
+                      <TabsTrigger value="HSCS">HSCS Token</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               </div>
             </CardContent>
@@ -209,6 +228,4 @@ const CreateMarketplace = () => {
       )}
     </div>
   );
-};
-
-export default CreateMarketplace;
+}
