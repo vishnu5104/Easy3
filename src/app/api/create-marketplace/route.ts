@@ -14,8 +14,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    //@ts-ignore
-    const existingTenant = await prisma.tenant.findUnique({
+
+    const existingTenant = await prisma.marketplace.findUnique({
       where: { subdomain },
     });
 
@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-    //@ts-ignore
-    const newTenant = await prisma.tenant.create({
+
+    const newTenant = await prisma.marketplace.create({
       data: { name, subdomain },
     });
 
